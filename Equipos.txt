@@ -1,4 +1,8 @@
-4
+8
+Real_Madrid 10
+Valencia 9
+Barcelona 10
+Valladolid 7
 Real_Madrid 10
 Valencia 9
 Barcelona 10
