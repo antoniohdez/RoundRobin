@@ -14,51 +14,35 @@ int **matriz;
 void imprimeMatriz(){
     for(int i = 0; i < N; i++){
         for(int j = 0; j < N; j++){
-            cout<<matriz[i][j]<<" ";
+            cout<<matriz[j][i]<<" ";
         }
         cout<<endl;
     }
 }
 
 int generaPartidos(int x1, int y1, int sX, int sY){
-    if(sX < 1) return 0;
+    if(sX == 0) return 0;
     else{
-    for(int i = y1; i < sY/2; i++){
-        matriz[x1+sX/2][y1+sY/2+i] = matriz[x1][y1+i];
-        cout<<x1+sX/2<<" - "<<y1+sY/2+i<<endl;
-    }
+        for(int i = 0; i < sY/2; i++){
+            matriz[x1+sX/2][y1+sY/2+i] = matriz[x1][y1+i];
+        }
         int contY = 0;
-    
         for(int i = sY/2; i <sY; i++){
             matriz[x1+sX/2][y1+contY] = matriz[x1][y1+sY/2+ contY];
             contY++;
+        }
+        generaPartidos(x1, y1, sX/2, sY/2);
+        generaPartidos(x1 + sX/2, y1, sX/2, sY/2);
+        generaPartidos(x1, y1 + sY/2, sX/2, sY/2);
+        generaPartidos(x1 + sX/2, y1 + sY/2, sX/2, sY/2);
     }
-     
-        
-        /*
-    for(int i = sY/2; i < sY ;i++){
-        matriz[x1+sX/2][posy++] = matriz[x1][y1+i];
-        
-    }
-         */
-        
-        
-    generaPartidos(x1, y1, sX/2, sY/2);
-    generaPartidos(sX/2, y1, sX/2, sY/2);
-    generaPartidos(x1, sY/2, sX/2, sY/2);
-    generaPartidos(sX/2, sY/2, sX/2, sY/2);
-    }
-    
     return 0;
 }
 
 void generaPartidos(){
     if(N % 2 == 0){
-            generaPartidos(0, 0, N, N);
-    }else{
-        generaPartidos(0, 0, N+1, N);
+        generaPartidos(0, 0, N, N);
     }
-    
 }
 
 void crearMatriz(){
@@ -74,9 +58,7 @@ void crearMatriz(){
                 }else{
                     matriz[i][j] = 0;
                 }
-                //cout << matriz[i][j];
             }
-            //cout<<endl;
         }
     }else{
         matriz = new int *[N+1];
@@ -88,11 +70,9 @@ void crearMatriz(){
                 if(i == 0){
                     matriz[i][j] = j+1;
                 }else{
-                    matriz[i][j] = -1;
+                    matriz[i][j] = 0;
                 }
-                //cout << matriz[i][j];
             }
-            //cout<<endl;
         }
     }
 }
@@ -126,8 +106,6 @@ void leerArchivo(string ruta){
     }
 }
 
-
-
 int main(){
     
     leerArchivo("/Users/Antonio/Desktop/Algoritmos/ProyectoParcial/Equipos.txt");
@@ -135,10 +113,7 @@ int main(){
     generaPartidos();
     imprimeMatriz();
     cout<<"Número de equipos: "<<N<<endl;
-    
-    for(int i =  0; i < N; i++){
-        cout<<equipos.at(i)<<" "<<peso.at(i)<<endl;
-    }
-    cout<<sizeof(matriz)/sizeof(*matriz);
+   
+    //cout<<sizeof(matriz)/sizeof(*matriz);
     return 0;
 }
