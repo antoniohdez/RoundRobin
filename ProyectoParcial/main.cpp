@@ -8,11 +8,42 @@
 
 using namespace std;
 
+struct fecha {
+    int dia;
+    int mes;
+    int anno;
+};
+
 int N;
 int **matriz, **tablaScores, **tablaEstad, sigFecha=1;
 bool run = true;
 vector<string> equipos;
 vector<int> peso;
+fecha fechaJuego;
+
+//MANEJO DE FECHAS
+bool bisiesto(int a) {
+    return !(a%4) && ((a%100) || !(a%400));
+}
+
+fecha operator +(fecha f1, int d) {
+    int dm[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    fecha temp = f1;
+    
+    temp.dia += d;
+    if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
+    while(temp.dia > dm[temp.mes-1]) {
+        temp.dia -= dm[temp.mes-1];
+        temp.mes++;
+        if(temp.mes > 12) {
+            temp.mes = 1;
+            temp.anno++;
+            if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
+        }
+    }
+    
+    return temp;
+}
 
 int generaPartidos(int x1, int y1, int sX, int sY){
     if(sX == 0) return 0;
@@ -120,6 +151,7 @@ void imprimeCalendario(){
 void simulacionFechas(){
 	if(sigFecha < N-1){
 		cout << "Dia numero " << sigFecha << " del torneo" << endl;
+        cout << "Fecha de los partidos: " << fechaJuego.dia<<"/"<<fechaJuego.mes<<"/"<<fechaJuego.anno;
 		for(int i = 0; i < N; i++){
 			if(matriz[i][sigFecha] > matriz[i][0]){
 				cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][sigFecha]-1) << endl;
@@ -137,8 +169,10 @@ void simulacionFechas(){
 }
 
 void simulacionCompleta(){
-	for(int j = 1; j < N; j++){
-		cout << "Dia numero " << j << " del torneo" << endl;
+	for(int j = sigFecha; j < N; j++){
+		cout << "Jornada " << j << " del torneo" << endl;
+        cout << "Fecha: " << fechaJuego.dia << "/" << fechaJuego.mes << "/" << fechaJuego.anno << endl;
+        fechaJuego = fechaJuego + 7;
 		for(int i = 0; i < N; i++){
 			if(matriz[i][j] > matriz[i][0]){
 				cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
@@ -225,6 +259,7 @@ void leerArchivo(string ruta){
             peso.push_back(stoi(line));
         }
         myfile.close();
+        fechaJuego = { 29, 10, 2013 };
     }
     else{
         cout << "No se pudo leer el archivo " <<endl;
@@ -233,7 +268,10 @@ void leerArchivo(string ruta){
 
 int main(){
 	string exit = "";
-    leerArchivo("C:\\Users\\SuGaR\\Documents\\Dropbox\\ITESM\\5to Semestre\\Analisis y D. de Algoritmos\\RoundRobin\\Equipos.txt");
+    //leerArchivo("C:\\Users\\SuGaR\\Documents\\Dropbox\\ITESM\\5to Semestre\\Analisis y D. de Algoritmos\\RoundRobin\\Equipos.txt");
+    
+    leerArchivo("/Users/Antonio/Desktop/Algoritmos/ProyectoParcial/Equipos.txt");
+    
     crearMatriz();
     generaPartidos();
     calculaGanador();

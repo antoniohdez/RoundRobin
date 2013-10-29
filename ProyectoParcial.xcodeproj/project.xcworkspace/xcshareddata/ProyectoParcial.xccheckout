@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8DABE283-5C62-402B-A12E-9CEB141CB2B8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ProyectoParcial</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>AAE5611A-8345-432A-A5D1-58D30D031C9C</key>
+		<string>https://github.com/antoniohdez/RoundRobin.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ProyectoParcial.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>AAE5611A-8345-432A-A5D1-58D30D031C9C</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/antoniohdez/RoundRobin.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>AAE5611A-8345-432A-A5D1-58D30D031C9C</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AAE5611A-8345-432A-A5D1-58D30D031C9C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ProyectoParcial</string>
+		</dict>
+	</array>
+</dict>
+</plist>
