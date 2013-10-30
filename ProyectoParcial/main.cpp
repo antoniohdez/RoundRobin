@@ -70,6 +70,7 @@ void generaPartidos(){
     }
 }
 
+/*
 void calculaGanador(){
 	srand(time(NULL));
 	for(int i = 0 ; i < N; i++){
@@ -82,7 +83,18 @@ void calculaGanador(){
 			}
 		}
 	}
-
+}
+*/
+void calculaGanador(){
+	srand(time(NULL));
+	for(int i = 0 ; i < N; i++){
+		for(int j = 1 ; j < N; j++){
+			tablaScores[i][j] = rand() % (peso.at(i)+1);
+			if(tablaScores[i][j]>5){
+				tablaScores[i][j] = tablaScores[i][j] /2;
+			}
+		}
+	}
 }
 
 void calculaEstadisticas(int eq1, int eq2, int goles1, int goles2){
