@@ -225,6 +225,7 @@
 				A9C268B5181A29A200BD2C8A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

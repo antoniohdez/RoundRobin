@@ -16,38 +16,37 @@ struct fecha {
 
 int N;
 int **matriz, **tablaScores, **tablaEstad, sigFecha=1;
-bool run = true;
+bool run = true, simulado = false;
 vector<string> equipos;
 vector<int> peso;
 fecha fechaJuego;
 
 //MANEJO DE FECHAS
-bool bisiesto(int a) {
-    return !(a%4) && ((a%100) || !(a%400));
-}
+ bool bisiesto(int a) {
+ return !(a%4) && ((a%100) || !(a%400));
+ }
+ 
+ fecha operator +(fecha f1, int d) {
+ int dm[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+ fecha temp = f1;
+ 
+ temp.dia += d;
+ if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
+ while(temp.dia > dm[temp.mes-1]) {
+ temp.dia -= dm[temp.mes-1];
+ temp.mes++;
+ if(temp.mes > 12) {
+ temp.mes = 1;
+ temp.anno++;
+ if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
+ }
+ }
+ 
+ return temp;
+ }
 
-fecha operator +(fecha f1, int d) {
-    int dm[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-    fecha temp = f1;
-    
-    temp.dia += d;
-    if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
-    while(temp.dia > dm[temp.mes-1]) {
-        temp.dia -= dm[temp.mes-1];
-        temp.mes++;
-        if(temp.mes > 12) {
-            temp.mes = 1;
-            temp.anno++;
-            if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
-        }
-    }
-    
-    return temp;
-}
-
-int generaPartidos(int x1, int y1, int sX, int sY){
-    if(sX == 0) return 0;
-    else{
+void generaPartidos(int x1, int y1, int sX, int sY){
+    if(sX != 0){
         for(int i = 0; i < sY/2; i++){
             matriz[x1+sX/2][y1+sY/2+i] = matriz[x1][y1+i];
         }
@@ -61,31 +60,48 @@ int generaPartidos(int x1, int y1, int sX, int sY){
         generaPartidos(x1, y1 + sY/2, sX/2, sY/2);
         generaPartidos(x1 + sX/2, y1 + sY/2, sX/2, sY/2);
     }
-    return 0;
 }
 
-void generaPartidos(){
-    if(N % 2 == 0){
-        generaPartidos(0, 0, N, N);
+void generaPartidosIterativo(){
+    unsigned int n,i,j,tmp, ronda, M;
+    n = N;
+    M = n;
+    if (n & 1) M=n+1;
+	else       M=n;
+    for (ronda=1; ronda<M; ronda++) {
+		//printf(" Ronda %2d: ",ronda);
+		for (i=1; i<M; i++) {
+			for (j=1; j<M; j++) {
+				if ( (i+j)%(M-1)== ronda%(M-1)) break;
+			}
+            //if (j==i && M!=n) 	 printf("  - ");
+            if (j==i && M!=n) matriz[i-1][ronda] = 0;
+            //else if (j==i && M==n)	{printf(" %2d ",n); tmp=i;}
+            else if (j==i && M==n)	{matriz[i-1][ronda] = n; tmp=i;}
+            //else printf(" %2d ",j);
+            else matriz[i-1][ronda] = j;
+            
+            
+		}
+		//if (M==n) printf(" %2d ",tmp);
+        if (M==n) matriz[i-1][ronda] = tmp;
+	}
+    for(int i = 0; i < N; i++){
+        matriz[i][0] = i+1;
     }
 }
 
-/*
-void calculaGanador(){
-	srand(time(NULL));
-	for(int i = 0 ; i < N; i++){
-		for(int j = 1 ; j < N; j++){
-			if(peso[i]>5){
-				tablaScores[i][j] = rand() % (6);
-			}
-			else{
-				tablaScores[i][j] = rand() % (peso.at(i)+1);
-			}
-		}
-	}
+void generaPartidos(){
+    long x = N;
+    if((x & (x - 1)) == 0){
+        generaPartidos(0, 0, N, N);
+    }
+    else{
+        generaPartidosIterativo();
+    }
 }
-*/
-void calculaGanador(){
+
+void calculaScores(){
 	srand(time(NULL));
 	for(int i = 0 ; i < N; i++){
 		for(int j = 1 ; j < N; j++){
@@ -137,12 +153,12 @@ void calculaEstadisticas(int eq1, int eq2, int goles1, int goles2){
 
 void imprimeEstadisticas(){
 	cout << "\t\t\t Tabla Estadisticas" << endl;
-	cout << "PJ  PG  PE  PP  GF  GC  DG  PTS" << endl;
+	cout << "PJ\tPG\tPE\tPP\tGF\tGC\tDG\tPTS" << endl;
 	for(int i = 0; i < N; i++){
 		for(int j = 0; j < 8; j++){
-			cout<<tablaEstad[i][j] << "   ";
+			cout<<tablaEstad[i][j] << "\t";
 		}
-		cout << " " << equipos.at(matriz[i][0]-1) << endl;
+		cout << equipos.at(matriz[i][0]-1) << endl;
 	}
 	cout << endl;
 }
@@ -176,27 +192,33 @@ void simulacionFechas(){
 		imprimeEstadisticas();
 	}
 	else{
-		cout << "No hay mas fechas disponibles" << endl;
+		cout << "Ya se simulo el torneo, no hay mas fechas disponibles" << endl;
 	}
 }
 
 void simulacionCompleta(){
-	for(int j = sigFecha; j < N; j++){
-		cout << "Jornada " << j << " del torneo" << endl;
-        cout << "Fecha: " << fechaJuego.dia << "/" << fechaJuego.mes << "/" << fechaJuego.anno << endl;
-        fechaJuego = fechaJuego + 7;
-		for(int i = 0; i < N; i++){
-			if(matriz[i][j] > matriz[i][0]){
-				cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
-				cout << tablaScores[i][j] << "-" << tablaScores[matriz[i][j]-1][j] <<endl;
-				calculaEstadisticas(matriz[i][0]-1, matriz[i][j]-1, tablaScores[i][j], tablaScores[matriz[i][j]-1][j]);
+	if(!simulado){
+		for(int j = sigFecha; j < N; j++){
+			cout << "Jornada " << j << " del torneo" << endl;
+			cout << "Fecha: " << fechaJuego.dia << "/" << fechaJuego.mes << "/" << fechaJuego.anno << endl;
+			fechaJuego = fechaJuego + 7;
+			for(int i = 0; i < N; i++){
+				if(matriz[i][j] > matriz[i][0]){
+					cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
+					cout << tablaScores[i][j] << "-" << tablaScores[matriz[i][j]-1][j] <<endl;
+					calculaEstadisticas(matriz[i][0]-1, matriz[i][j]-1, tablaScores[i][j], tablaScores[matriz[i][j]-1][j]);
+				}
 			}
+			cout << endl;
 		}
 		cout << endl;
+		imprimeEstadisticas();
+		sigFecha = N-1;
+		simulado= true;
 	}
-	cout << endl;
-	imprimeEstadisticas();
-	sigFecha = N-1;
+	else{
+		cout << "Ya se simulo el torneo, no hay mas fechas disponibles" << endl;
+	}
 }
 
 void crearMatriz(){
@@ -225,7 +247,7 @@ void crearMatriz(){
         }
     }
 	else{
-		cout << "El numero de equipos tiene que ser par " << endl;
+		cout << "El numero de equipos tiene que ser potecia de 2 " << endl;
 	}
 }
 
@@ -271,69 +293,68 @@ void leerArchivo(string ruta){
             peso.push_back(stoi(line));
         }
         myfile.close();
-        fechaJuego = { 29, 10, 2013 };
+		fechaJuego = { 29, 10, 2013 };
     }
     else{
         cout << "No se pudo leer el archivo " <<endl;
+		run = false;
     }
 }
 
 int main(){
-	string exit = "";
     //leerArchivo("C:\\Users\\SuGaR\\Documents\\Dropbox\\ITESM\\5to Semestre\\Analisis y D. de Algoritmos\\RoundRobin\\Equipos.txt");
     
     leerArchivo("/Users/Antonio/Desktop/Algoritmos/ProyectoParcial/Equipos.txt");
-    
+    if(N%2 == 1){
+        cout<<"El numero de equipos debe ser par";
+        return 0;
+    }
     crearMatriz();
     generaPartidos();
-    calculaGanador();
+    calculaScores();
 	while(run){
 		int menu;
-
-		cout << "\t\t\t Liga Mexicana " << endl;
+        
+		cout << "\t\t\t Torneo Round Robin\n " << endl;
 		cout << "1- Imprime Calendario de Juegos" << endl;
 		cout << "2- Simular liga completa" << endl;
 		cout << "3- Simular siguiente por fechas" << endl;
 		cout << "4- Imprime Estadisticas" << endl;
 		cout << "5- Salir de la Liga" << endl;
 		cin >> menu;
-
+        
 		if(menu==1){
-			system("cls");
-			cout << "\t\t\t Liga Mexicana " << endl;
+			cout << "\t\t\t Round Robin\n " << endl;
 			imprimeCalendario();
-			//cin >> exit;
+			cout << endl;
 		}
 		else if(menu==2){
-			system("cls");
-			cout << "\t\t\t Liga Mexicana " << endl;
+			cout << "\t\t\t Round Robin\n " << endl;
 			simulacionCompleta();
-			//cin >> exit;
+			cout << endl;
 		}
 		else if(menu==3){
-			system("cls");
-			cout << "\t\t\t Liga Mexicana " << endl;
+			cout << "\t\t\t Round Robin\n " << endl;
 			simulacionFechas();
-			//cin >> exit;
+			cout << endl;
 		}
 		else if(menu==4){
-			system("cls");
-			cout << "\t\t\t Liga Mexicana " << endl;
+			cout << "\t\t\t Round Robin\n " << endl;
 			imprimeEstadisticas();
-			//cin >> exit;
+			cout << endl;
 		}
 		else if(menu==5){
-			system("cls");
 			run = false;
+			cout << endl;
 		}
 		else{
-			system("cls");
-			cout << "\t\t\t Liga Mexicana \n" << endl;
+			cout << "\t\t\t Round Robin\n" << endl;
 			cout << "entrada invalida, por favor intente de nuevo" << endl;
-			//cin >> exit;
+			cout << endl;
 		}
-
+        
 	}
-
+    
     return 0;
+    
 }
