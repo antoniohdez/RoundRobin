@@ -20,6 +20,7 @@ bool run = true, simulado = false;
 vector<string> equipos;
 vector<int> peso;
 fecha fechaJuego;
+bool impar = false;
 
 //MANEJO DE FECHAS
  bool bisiesto(int a) {
@@ -114,6 +115,9 @@ void calculaScores(){
 }
 
 void calculaEstadisticas(int eq1, int eq2, int goles1, int goles2){
+    if(impar && (equipos.at(eq1) == "NO" || equipos.at(eq2) == "NO")){
+        return ;
+    }
 	//partidos jugados
 	tablaEstad[eq1][0]++;
 	tablaEstad[eq2][0]++;
@@ -155,10 +159,11 @@ void imprimeEstadisticas(){
 	cout << "\t\t\t Tabla Estadisticas" << endl;
 	cout << "PJ\tPG\tPE\tPP\tGF\tGC\tDG\tPTS" << endl;
 	for(int i = 0; i < N; i++){
-		for(int j = 0; j < 8; j++){
+		if(equipos.at(matriz[i][0]-1) == "NO") continue;
+        for(int j = 0; j < 8; j++){
 			cout<<tablaEstad[i][j] << "\t";
 		}
-		cout << equipos.at(matriz[i][0]-1) << endl;
+        cout << equipos.at(matriz[i][0]-1) << endl;
 	}
 	cout << endl;
 }
@@ -168,7 +173,9 @@ void imprimeCalendario(){
 		cout << "Dia numero " << j << " del torneo" << endl;
 		for(int i = 0; i < N; i++){
 			if(matriz[i][j] > matriz[i][0]){
-				cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
+                if(!(impar && equipos.at(matriz[i][j]-1) == "NO")){
+                    cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
+                }
 			}
 		}
 		cout << endl;
@@ -181,7 +188,7 @@ void simulacionFechas(){
 		cout << "Dia numero " << sigFecha << " del torneo" << endl;
         cout << "Fecha de los partidos: " << fechaJuego.dia<<"/"<<fechaJuego.mes<<"/"<<fechaJuego.anno;
 		for(int i = 0; i < N; i++){
-			if(matriz[i][sigFecha] > matriz[i][0]){
+			if(matriz[i][sigFecha] > matriz[i][0] && equipos.at(matriz[i][sigFecha]-1) != "NO"){
 				cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][sigFecha]-1) << endl;
 				cout << tablaScores[i][sigFecha] << "-" << tablaScores[matriz[i][sigFecha]-1][sigFecha] <<endl;
 				calculaEstadisticas(matriz[i][0]-1, matriz[i][sigFecha]-1, tablaScores[i][sigFecha], tablaScores[matriz[i][sigFecha]-1][sigFecha]);
@@ -203,7 +210,7 @@ void simulacionCompleta(){
 			cout << "Fecha: " << fechaJuego.dia << "/" << fechaJuego.mes << "/" << fechaJuego.anno << endl;
 			fechaJuego = fechaJuego + 7;
 			for(int i = 0; i < N; i++){
-				if(matriz[i][j] > matriz[i][0]){
+				if(matriz[i][j] > matriz[i][0] && equipos.at(matriz[i][j]-1) != "NO"){
 					cout << equipos.at(matriz[i][0]-1) << " VS " << equipos.at(matriz[i][j]-1) << endl;
 					cout << tablaScores[i][j] << "-" << tablaScores[matriz[i][j]-1][j] <<endl;
 					calculaEstadisticas(matriz[i][0]-1, matriz[i][j]-1, tablaScores[i][j], tablaScores[matriz[i][j]-1][j]);
@@ -279,6 +286,10 @@ void leerArchivo(string ruta){
     {
         getline(myfile,line);
         N = stoi(line);
+        if(N%2 == 1){
+            impar = true;
+            N++;
+        }
         while (getline(myfile,line))
         {
             pos = 0;
@@ -292,6 +303,8 @@ void leerArchivo(string ruta){
             //cout << line << endl;
             peso.push_back(stoi(line));
         }
+        if(impar) peso.push_back(5);
+        if(impar) equipos.push_back("NO");
         myfile.close();
 		fechaJuego = { 29, 10, 2013 };
     }

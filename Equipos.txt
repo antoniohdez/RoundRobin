@@ -1,7 +1,6 @@
-6
+5
 Real_Madrid 10
 Valencia 9
 Barcelona 10
 Valladolid 7
 Machester 5
-Atletico 10
