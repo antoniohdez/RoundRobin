@@ -23,28 +23,29 @@ fecha fechaJuego;
 bool impar = false;
 
 //MANEJO DE FECHAS
- bool bisiesto(int a) {
- return !(a%4) && ((a%100) || !(a%400));
- }
+bool bisiesto(int a) {
+    return !(a%4) && ((a%100) || !(a%400));
+}
  
- fecha operator +(fecha f1, int d) {
- int dm[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
- fecha temp = f1;
- 
- temp.dia += d;
- if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
- while(temp.dia > dm[temp.mes-1]) {
- temp.dia -= dm[temp.mes-1];
- temp.mes++;
- if(temp.mes > 12) {
- temp.mes = 1;
- temp.anno++;
- if(bisiesto(temp.anno)) dm[1] = 29; else dm[1] = 28;
- }
- }
- 
- return temp;
- }
+fecha operator +(fecha f1, int d) {
+    int dm[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    fecha temp = f1;
+
+    temp.dia += d;
+    if(bisiesto(temp.anno)) dm[1] = 29;
+    else dm[1] = 28;
+    while(temp.dia > dm[temp.mes-1]) {
+        temp.dia -= dm[temp.mes-1];
+        temp.mes++;
+        if(temp.mes > 12) {
+            temp.mes = 1;
+            temp.anno++;
+            if(bisiesto(temp.anno)) dm[1] = 29;
+            else dm[1] = 28;
+        }
+    }
+    return temp;
+}
 
 void generaPartidos(int x1, int y1, int sX, int sY){
     if(sX != 0){
@@ -70,21 +71,14 @@ void generaPartidosIterativo(){
     if (n & 1) M=n+1;
 	else       M=n;
     for (ronda=1; ronda<M; ronda++) {
-		//printf(" Ronda %2d: ",ronda);
 		for (i=1; i<M; i++) {
 			for (j=1; j<M; j++) {
 				if ( (i+j)%(M-1)== ronda%(M-1)) break;
 			}
-            //if (j==i && M!=n) 	 printf("  - ");
             if (j==i && M!=n) matriz[i-1][ronda] = 0;
-            //else if (j==i && M==n)	{printf(" %2d ",n); tmp=i;}
             else if (j==i && M==n)	{matriz[i-1][ronda] = n; tmp=i;}
-            //else printf(" %2d ",j);
             else matriz[i-1][ronda] = j;
-            
-            
 		}
-		//if (M==n) printf(" %2d ",tmp);
         if (M==n) matriz[i-1][ronda] = tmp;
 	}
     for(int i = 0; i < N; i++){
@@ -318,10 +312,6 @@ int main(){
     //leerArchivo("C:\\Users\\SuGaR\\Documents\\Dropbox\\ITESM\\5to Semestre\\Analisis y D. de Algoritmos\\RoundRobin\\Equipos.txt");
     
     leerArchivo("/Users/Antonio/Desktop/Algoritmos/ProyectoParcial/Equipos.txt");
-    if(N%2 == 1){
-        cout<<"El numero de equipos debe ser par";
-        return 0;
-    }
     crearMatriz();
     generaPartidos();
     calculaScores();
